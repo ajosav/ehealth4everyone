@@ -39,14 +39,17 @@ class PatientController extends Controller
 
         $patient = PatientProfile::where('patient_uuid', auth()->user()->uuid)->exists();
 
-        if ($patient === true) {
+        if ($patient) {
             # code...
             $patient = PatientProfile::where('patient_uuid', auth()->user()->uuid)->get();
-        }
+            return view('pages.patient.create_profile', ['patient' => $patient[0]]);
+        } 
+
+        return view('pages.patient.create_profile', ['patient'=>null]);
 
 
 
-        return view('pages.patient.create_profile', ['patient' => $patient[0]]);
+
     }
 
     /**

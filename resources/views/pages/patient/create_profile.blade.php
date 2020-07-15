@@ -167,8 +167,13 @@
                                     <label for="exampleInputPassword1">Alcohol</label>
                                     <select class="form-control" name="alchohol">
                                         <option value="">Select an option</option>
-                                        <option @if($patient->alchohol)@if($patient->alchohol == 1) {{ 'selected' }} @endif @endif() value="1">True</option>
-                                        <option @if($patient->alchohol)@if($patient->alchohol == 0) {{ 'selected' }} @endif @endif() value="0">False</option>
+                                        @if($patient)
+                                            <option @if($patient->alchohol)@if($patient->alchohol == 1) {{ 'selected' }} @endif @endif() value="1">True</option>
+                                            <option @if($patient->alchohol)@if($patient->alchohol == 0) {{ 'selected' }} @endif @endif() value="0">False</option>
+                                        @else
+                                            <option value="1">True</option>
+                                            <option {{ 'selected' }} value="0">False</option>
+                                        @endif
                                     </select>
                                 </div>
                             </div>
@@ -177,8 +182,13 @@
                                     <label for="exampleInputPassword1">Drugs</label>
                                     <select class="form-control" name="drug">
                                         <option value="">Select an option</option>
-                                        <option @if($patient->drug)@if($patient->drug == 1) {{ 'selected' }} @endif @endif()  value="1">True</option>
-                                        <option @if($patient->drug)@if($patient->drug == 0) {{ 'selected' }} @endif @endif() value="0">False</option>
+                                        @if($patient)
+                                            <option @if($patient->drug)@if($patient->drug == 1) {{ 'selected' }} @endif @endif()  value="1">True</option>
+                                            <option @if($patient->drug)@if($patient->drug == 0) {{ 'selected' }} @endif @endif() value="0">False</option>
+                                        @else
+                                            <option value="1">True</option>
+                                            <option {{ 'selected' }} value="0">False</option>
+                                        @endif
                                     </select>
                                 </div>
                             </div>
@@ -187,8 +197,13 @@
                                     <label for="exampleInputPassword1">Military</label>
                                     <select class="form-control" name="millitary">
                                         <option value="">Select an option</option>
-                                        <option @if($patient->millitary)@if($patient->millitary == 1) {{ 'selected' }} @endif @endif() value="1">True</option>
-                                        <option @if($patient->millitary)@if($patient->millitary == 0) {{ 'selected' }} @endif @endif() value="0">False</option>
+                                        @if($patient)
+                                            <option @if($patient->millitary)@if($patient->millitary == 1) {{ 'selected' }} @endif @endif() value="1">True</option>
+                                            <option @if($patient->millitary)@if($patient->millitary == 0) {{ 'selected' }} @endif @endif() value="0">False</option>
+                                        @else
+                                            <option value="1">True</option>
+                                            <option {{ 'selected' }} value="0">False</option>
+                                        @endif
                                     </select>
                                 </div>
                             </div>
@@ -196,9 +211,14 @@
                                 <div class="form-group">
                                     <label for="exampleInputPassword1">Blood Transfusion</label>
                                     <select class="form-control" name="blood_transfusion">
-                                        <option value="">Select an option</option>
-                                        <option @if($patient->blood_transfusion)@if($patient->blood_transfusion == 1) {{ 'selected' }} @endif @endif() value="1">True</option>
-                                        <option @if($patient->blood_transfusion)@if($patient->blood_transfusion == 0) {{ 'selected' }} @endif @endif() value="0">False</option>
+                                            <option value="">Select an option</option>
+                                        @if($patient)
+                                            <option @if($patient->blood_transfusion)@if($patient->blood_transfusion == 1) {{ 'selected' }} @endif @endif() value="1">True</option>
+                                            <option @if($patient->blood_transfusion)@if($patient->blood_transfusion == 0) {{ 'selected' }} @endif @endif() value="0">False</option>
+                                        @else
+                                            <option value="1">True</option>
+                                            <option {{ 'selected' }} value="0">False</option>
+                                        @endif
                                     </select>
                                 </div>
                             </div>
@@ -209,8 +229,13 @@
                                     <label for="exampleInputPassword1">Ulcer</label>
                                     <select class="form-control" name="ulcer">
                                         <option value="">Select an option</option>
-                                        <option @if($patient->ulcer)@if($patient->ulcer == 1) {{ 'selected' }} @endif @endif() value="1">True</option>
-                                        <option value="0" @if($patient->ulcer)@if($patient->ulcer == 0) {{ 'selected' }} @endif @endif()>False</option>
+                                        @if($patient)
+                                            <option @if($patient->ulcer)@if($patient->ulcer == 1) {{ 'selected' }} @endif @endif() value="1">True</option>
+                                            <option value="0" @if($patient->ulcer)@if($patient->ulcer == 0) {{ 'selected' }} @endif @endif()>False</option>
+                                        @else
+                                            <option value="1">True</option>
+                                            <option {{ 'selected' }} value="0">False</option>
+                                        @endif
                                     </select>
                                 </div>
                             </div>
@@ -219,9 +244,15 @@
                                     <label for="exampleInputPassword1">Tobacco Usage</label>
                                     <select class="form-control" name="tobacco_use">
                                         <option value="">Select an option</option>
+                                        @if($patient)
                                         <option value="0" @if($patient->tobacco_use)@if($patient->tobacco_use == 0) {{ 'selected' }} @endif @endif()>Never</option>
                                         <option value="1" @if($patient->tobacco_use)@if($patient->tobacco_use == 1) {{ 'selected' }} @endif @endif()>Till Date</option>
                                         <option value="2" @if($patient->tobacco_use)@if($patient->tobacco_use == 2) {{ 'selected' }} @endif @endif()>Before</option>
+                                        @else
+                                            <option value="0" >Never</option>
+                                            <option value="1"  {{ 'selected' }}>Till Date</option>
+                                            <option value="2" {{ 'selected' }} >Before</option>
+                                        @endif
                                     </select>
                                 </div>
                             </div>
