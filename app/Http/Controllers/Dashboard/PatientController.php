@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Gate;
 use Illuminate\Http\Response;
+use App\PatientProfile;
+
 
 class PatientController extends Controller
 {
@@ -14,6 +16,7 @@ class PatientController extends Controller
         $this->middleware(['auth', 'verified']);
     }
     /**
+     *
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -33,7 +36,17 @@ class PatientController extends Controller
     public function create()
     {
         abort_if(Gate::denies('patient'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        return view('pages.patient.create_profile');
+
+        $patient = PatientProfile::where('patient_uuid', auth()->user()->uuid)->exists();
+
+        if ($patient === true) {
+            # code...
+            $patient = PatientProfile::where('patient_uuid', auth()->user()->uuid)->get();
+        }
+
+
+
+        return view('pages.patient.create_profile', ['patient' => $patient[0]]);
     }
 
     /**
@@ -45,6 +58,34 @@ class PatientController extends Controller
     public function store(Request $request)
     {
         //
+
+        foreach ($request->except('_token') as $data => $value) {
+            $valids[$data] = "required";
+          }
+
+          $request->validate($valids);
+
+          $data = array_merge($request->except('_token'), ['patient_uuid' => auth()->user()->uuid]);
+
+          $save_profile = PatientProfile::firstOrCreate(
+            ['patient_uuid' => auth()->user()->uuid],
+            $data
+        );
+
+
+          if ($save_profile) {
+              # code...
+
+          return redirect()->back()->with('message', 'Patient Info Successfully Saved.');
+          } else {
+              # code...
+
+          return redirect()->back()->with('err_msg', 'Error Saving Patient Info.');
+          }
+
+
+
+
     }
 
     /**

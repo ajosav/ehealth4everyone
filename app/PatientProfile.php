@@ -9,4 +9,5 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class PatientProfile extends Model
 {
     use SoftDeletes, HasUUID;
+    protected $guarded = [];
 }
