@@ -10,4 +10,9 @@ class PatientProfile extends Model
 {
     use SoftDeletes, HasUUID;
     protected $guarded = [];
+
+
+    public function user() {
+        return $this->belongsTo('App\User', 'uuid', 'patient_uuid');
+    }
 }

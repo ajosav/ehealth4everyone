@@ -2,9 +2,19 @@
 
 namespace App\Http\Controllers\dashboard;
 
+use App\Appointment;
+use App\Department;
 use App\DoctorProfile;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AppointmentRequest;
+use App\Http\Resources\AppointmentResource;
+use App\Http\Resources\DoctorAppointmentResource;
+use App\Http\Resources\DoctorsDepartmentResource;
+use App\Http\Resources\PatientAppointmentResource;
+use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Gate;
 
 class AppointmentController extends Controller
 {
@@ -21,9 +31,15 @@ class AppointmentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function viewAppointments()
     {
-        
+        if(Gate::denies('doctor')) {
+            $appointments = Appointment::where('patient_uuid', auth()->user()->uuid)->get();
+            return $this->success('success', PatientAppointmentResource::collection($appointments));
+        } else {
+            $appointments = Appointment::where('doctor_uuid', auth()->user()->uuid)->get();
+            return $this->success('success', DoctorAppointmentResource::collection($appointments));
+        }
     }
 
     /**
@@ -32,9 +48,23 @@ class AppointmentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AppointmentRequest $request)
     {
-        //
+        $user_id = auth()->user()->uuid;
+        $start_time = Carbon::parse($request->start_time)->format('Y-m-d H:i');
+        $stop_time = Carbon::parse($request->stop_time)->format('Y-m-d H:i');
+        $create_appointment = Appointment::create([
+            'patient_uuid' => $user_id,
+            'doctor_uuid' => $request->doctor,
+            'start_time' => $start_time,
+            'finish_time' => $stop_time,
+            'status' => 0
+        ]);
+        if($create_appointment) {
+            return $this->success('Successfully created Appointment');
+        }
+
+        return $this->failed('Error creating Appointment');
     }
 
     /**
@@ -44,8 +74,17 @@ class AppointmentController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function findDoctor($id) {
-        $doctors = DoctorProfile::where('department_id', $id)->with('user')->get();
-        return $doctors;
+        $department = Department::findByUuid($id);
+        if(!$department) {
+            return $this->failed('Department not found');
+        }
+
+        $doctors = $department->findAllDoctorsByDepartment()->get();
+        if(!$doctors) {
+            return $this->failed('Unable to find doctor');
+        }
+        return DoctorsDepartmentResource::collection($doctors);
+
     }
 
     /**

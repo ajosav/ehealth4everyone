@@ -26,7 +26,7 @@ class DepartmentController extends Controller
         abort_if(Gate::denies('doctor'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $departments = Department::orderBy('created_at', 'desc')->latest()->get();
 
-        return DepartmentResource::collection($departments);
+        return $this->success('success', DepartmentResource::collection($departments));
     }
 
     public function store(Request $request) {
@@ -69,7 +69,12 @@ class DepartmentController extends Controller
         return $this->failed('Failed to update');
     }
 
-    public function destroy(Request $request, $uuid) {
-        return $request->all();
+    public function destroy($uuid) {
+        $delete_dept = Department::findByUuid($uuid)->delete();
+        if(!$delete_dept) {
+            return $this->failed('Department deletion failed');
+        }
+
+        return $this->success('successfully removed department');
     }
 }

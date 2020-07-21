@@ -12,6 +12,11 @@ import { Form, HasError, AlertError } from 'vform';
 import VueProgressBar from 'vue-progressbar';
 import swal from 'sweetalert2';
 
+
+import Gate from './AccessGates';
+
+Vue.prototype.$gate = new Gate(window.user);
+
 // Initializing vue form object
 window.Form = Form;
 Vue.component(HasError.name, HasError);
@@ -66,6 +71,7 @@ Vue.component('info-success', require('./components/Infos/success.vue').default)
 
 Vue.component('all-departments', require('./components/departments/AllDepartments.vue').default);
 Vue.component('book-appointment', require('./components/appointment/CreateAppointment.vue').default);
+Vue.component('all-appointments', require('./components/appointment/AllAppointments.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

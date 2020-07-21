@@ -17,7 +17,6 @@
 <script type="text/javascript" src="{{asset('vendor/daterange/js/moment.min.js') }}"></script>
 <script type="text/javascript" src="{{asset('vendor/daterange/js/knockout-3.4.2.js') }}"></script>
 <script type="text/javascript" src="{{asset('vendor/daterange/js/daterangepicker.min.js') }}"></script>
-<script type="text/javascript" src="{{asset('vendor/tinymce/js/tinymce/tinymce.min.js') }}"></script>
 
 <script type="text/javascript" src="{{asset('vendor/datatable/pdfmake.min.js') }}"></script>
 <script type="text/javascript" src="{{asset('vendor/datatable/vfs_fonts.js') }}"></script>

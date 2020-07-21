@@ -18,6 +18,8 @@
         
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
         <script src="{{ asset('vendor/pace/pace.js') }}"></script>
+        
+        <script type="text/javascript" src="{{asset('vendor/tinymce/js/tinymce/tinymce.min.js') }}"></script>
 
 
 
@@ -109,22 +111,21 @@
 
         <!-- REQUIRED SCRIPTS -->
 
-        <script src="{{ mix('js/app.js') }}" rel="stylesheet"></script>
-             
+        
         @if(!request()->session()->has('user_notify') || !request()->session()->get('user_notify') == auth()->user()->uuid)
-            @can('doctor', auth()->user())
-                @if(!$doctor_profile)                      
-                    <div class="modal fade" id="welcome_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        @can('doctor', auth()->user())
+        @if(!$doctor_profile)                      
+        <div class="modal fade" id="welcome_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Create Your Profile</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+                                    <h5 class="modal-title" id="exampleModalLabel">Create Your Profile</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
                                 </div>
                                 <div class="modal-body">
-                                Welcome. <b>{{auth()->user()->name}}</b> You need to create a profile for patients to be able to find you. <a href="{{route('manage_profile.create')}}">Click here </a> to create your profile now
+                                    Welcome. <b>{{auth()->user()->name}}</b> You need to create a profile for patients to be able to find you. <a href="{{route('manage_profile.create')}}">Click here </a> to create your profile now
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -132,22 +133,22 @@
                             </div>
                         </div>
                     </div>
-
-                @endif
-                
-            @elsecan('patient', auth()->user())
-                @if(!$patient_profile)
+                    
+                    @endif
+                    
+                    @elsecan('patient', auth()->user())
+                    @if(!$patient_profile)
                     <div class="modal fade show" id="welcome_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Create Your Profile</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+                                    <h5 class="modal-title" id="exampleModalLabel">Create Your Profile</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
                                 </div>
                                 <div class="modal-body">
-                                Welcome. {{auth()->user()->name}} You need to create a profile for doctors to be able to know you. <a href="{{route('profile.create')}}">Click here </a> to create your profile now
+                                    Welcome. {{auth()->user()->name}} You need to create a profile for doctors to be able to know you. <a href="{{route('profile.create')}}">Click here </a> to create your profile now
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -155,26 +156,38 @@
                             </div>
                         </div>
                     </div>
-                @endif
-        
-            @endcan
-            {{session(['user_notify' => auth()->user()->uuid])}}
-        @endif
-        @include('includes.vendor_js')
-       
-        <script>
+                    @endif
+                    
+                    @endcan
+                        {{session(['user_notify' => auth()->user()->uuid])}}
+                    @endif
 
-            $(document).ready(function(){
-                $("#welcome_modal").modal('show');
-
+                    @auth
+                    <script>
+                        window.user = @json(auth()->user());
+                        </script>
+                    @endauth
+                    <script src="{{ mix('js/app.js') }}" rel="stylesheet"></script>
+                    @include('includes.vendor_js')
+                    
+                    <script>
+                        
+                        $(document).ready(function(){
+                            $("#welcome_modal").modal('show');
+                            
 
                 $('#start_time').datetimepicker({
-                    inline:false,
+                //     inline:false,
+                //     onGenerate: function () {
+                //         $('#start_time').val = $('#start_time').datetimepicker()
+                //     },
                 });
-            });
-
-            $(function () {
-                $('#stop_time').datetimepicker();
+                $('#stop_time').datetimepicker({
+                //     inline:false,
+                //     onGenerate: function () {
+                //         $('#stop_time').val = $('#stop_time').datetimepicker()
+                //     },
+                });
             });
         </script>
         @yield('scripts')

@@ -20,6 +20,7 @@ class CreateAppointmentsTable extends Migration
             $table->string('doctor_uuid');
             $table->dateTime('start_time');
             $table->dateTime('finish_time');
+            $table->tinyInteger('status')->nullable()->comment('0:pending. 1:accepted, 2:declined');
             $table->timestamps();
             $table->softDeletes();
 

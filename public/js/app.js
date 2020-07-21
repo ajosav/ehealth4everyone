@@ -2086,6 +2086,158 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/appointment/AllAppointments.vue?vue&type=script&lang=js&":
+/*!**************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/appointment/AllAppointments.vue?vue&type=script&lang=js& ***!
+  \**************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      appointments: []
+    };
+  },
+  methods: {
+    loadAll: function loadAll() {
+      var _this = this;
+
+      axios.get('/dashboard/all_appointments').then(function (response) {
+        var all_appointments = response.data;
+        _this.appointments = all_appointments.data;
+      });
+    },
+    reloadAppointments: function reloadAppointments() {
+      Fire.$emit('AfterCreate');
+    }
+  },
+  mounted: function mounted() {
+    var _this2 = this;
+
+    this.loadAll();
+    Fire.$on('AfterCreate', function () {
+      _this2.loadAll();
+    });
+  }
+});
+$(document).ready(function () {
+  $('#appointment_table').DataTable({
+    "order": [],
+    'language': {
+      'lengthMenu': '_MENU_ records per page',
+      "info": 'Showing _START_ - _END_ (_TOTAL_)',
+      "search": 'Search',
+      'paginate': {
+        'previous': 'Previous',
+        'next': 'Next'
+      }
+    },
+    'columnDefs': [{
+      "orderable": false,
+      'targets': [0, 3]
+    } // {
+    //     'checkboxes': {
+    //        'selectRow': true
+    //     },
+    //     'targets': 0
+    // },
+    ],
+    'select': {
+      style: 'multi',
+      selector: 'td:first-child'
+    },
+    'lengthMenu': [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    dom: '<"row"lfB>rtip',
+    buttons: [{
+      extend: 'pdf',
+      text: 'PDF',
+      exportOptions: {
+        columns: ':visible:Not(.not-exported)',
+        rows: ':visible'
+      }
+    }, {
+      extend: 'csv',
+      text: 'CSV',
+      exportOptions: {
+        columns: ':visible:Not(.not-exported)',
+        rows: ':visible'
+      }
+    }, {
+      extend: 'print',
+      text: 'print',
+      exportOptions: {
+        columns: ':visible:Not(.not-exported)',
+        rows: ':visible'
+      }
+    }, {
+      extend: 'colvis',
+      text: 'Column Visibility',
+      columns: ':gt(0)'
+    }]
+  });
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/appointment/CreateAppointment.vue?vue&type=script&lang=js&":
 /*!****************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/appointment/CreateAppointment.vue?vue&type=script&lang=js& ***!
@@ -2169,19 +2321,79 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       departments: [],
+      show_doctor: false,
       doctors: [],
+      appointments: [],
       editmode: false,
       form: new Form({
         uuid: '',
         stop_time: '',
         start_time: '',
         department: '',
-        doctor: ''
-      })
+        doctor: '',
+        appointment_reason: ''
+      }),
+      doc_info: {
+        name: '',
+        title: '',
+        position: '',
+        specialiazation: '',
+        charge: '',
+        certificate: ''
+      }
     };
   },
   methods: {
@@ -2201,10 +2413,46 @@ __webpack_require__.r(__webpack_exports__);
       this.form.fill(department);
     },
     populateDoctor: function populateDoctor(id) {
-      console.log(id);
+      var _this2 = this;
+
+      axios.get('/dashboard/find_doctor_by_dept/' + id).then(function (response) {
+        var all_doctors = response.data;
+        _this2.doctors = all_doctors.data;
+        $('select[name="doctor_id"]').html('');
+        _this2.show_doctor = false;
+        $('#doctor_id').selectpicker('refresh');
+
+        if (_this2.doctors.length < 1) {
+          return swal.fire('We are sorry', 'No doctor in this department', 'error');
+        }
+
+        $.each(_this2.doctors, function (el, val) {
+          $('select[name="doctor_id"]').append('<option value="' + val.uuid + '">' + val.name + '</option>');
+        });
+        $('#doctor_id').selectpicker('refresh');
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    doctorInfo: function doctorInfo(id) {
+      var _this3 = this;
+
+      if (this.doctors.length > 0) {
+        $.each(this.doctors, function (index, data) {
+          if (data.uuid == id) {
+            _this3.doc_info.name = data.name;
+            _this3.doc_info.title = data.title;
+            _this3.doc_info.position = data.position;
+            _this3.doc_info.specialiazation = data.specialiazation;
+            _this3.doc_info.charge = data.charge;
+            _this3.doc_info.certificate = data.certificates;
+            _this3.show_doctor = true;
+          }
+        });
+      }
     },
     updateDepartment: function updateDepartment() {
-      var _this2 = this;
+      var _this4 = this;
 
       this.$Progress.start();
       this.form.put('/dashboard/update_department/' + this.form.uuid).then(function () {
@@ -2212,23 +2460,51 @@ __webpack_require__.r(__webpack_exports__);
         swal.fire('Success', 'Department Information Updated.', 'success');
         Fire.$emit('AfterCreate');
 
-        _this2.$Progress.finish();
+        _this4.$Progress.finish();
       })["catch"](function () {
-        _this2.$Progress.fail();
+        _this4.$Progress.fail();
       });
     },
     bookAppointment: function bookAppointment() {
-      this.$Progress.start();
+      var _this5 = this;
+
+      this.form.start_time = $('#start_time').datetimepicker('getValue');
+      this.form.stop_time = $('#stop_time').datetimepicker('getValue');
+      $.each(this.form, function (el, data) {
+        console.log(data);
+
+        if (data = '') {
+          swal.fire('Error', 'All fields are required', 'error');
+        }
+      }); // $('#submit').attr('disabled', true);
+
+      this.form.post('/dashboard/create_appointment').then(function () {
+        _this5.departments = [];
+
+        _this5.form.reset();
+
+        _this5.show_doctor = false;
+        $('select[name="doctor_id"]').html('');
+        swal.fire('Success', 'Appointment Successfully Created, Doctor has been notified', 'success');
+        Fire.$emit('AfterCreate');
+      });
     }
   },
   created: function created() {
-    var _this3 = this;
+    var _this6 = this;
 
     this.loadAll();
     Fire.$on('AfterCreate', function () {
-      _this3.loadAll();
+      _this6.loadAll();
     });
   }
+});
+tinymce.init({
+  selector: 'textarea',
+  height: 130,
+  plugins: ['advlist autolink lists link image charmap print preview anchor textcolor', 'searchreplace visualblocks code fullscreen', 'insertdatetime media table contextmenu paste code wordcount'],
+  toolbar: 'insert | undo redo |  formatselect | bold italic backcolor  | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat',
+  branding: false
 });
 
 /***/ }),
@@ -43286,6 +43562,282 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/appointment/AllAppointments.vue?vue&type=template&id=9639862c&":
+/*!******************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/appointment/AllAppointments.vue?vue&type=template&id=9639862c& ***!
+  \******************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "card card-default collapsed-card" }, [
+    _c("div", { staticClass: "card-header" }, [
+      _c("h3", { staticClass: "card-title" }, [_vm._v("My Appointments")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "card-tools" }, [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-tool",
+            attrs: { type: "button", "data-card-widget": "collapse" },
+            on: {
+              click: function($event) {
+                return _vm.reloadAppointments()
+              }
+            }
+          },
+          [_c("i", { staticClass: "fas fa-plus" })]
+        ),
+        _vm._v(" "),
+        _vm._m(0)
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "card-body", staticStyle: { display: "none" } }, [
+      _c(
+        "div",
+        {
+          staticClass: "dataTables_wrapper dt-bootstrap4",
+          attrs: { id: "example1_wrapper" }
+        },
+        [
+          _c("div", { staticClass: "row" }, [
+            _c("div", { staticClass: "col-sm-12" }, [
+              _c(
+                "table",
+                {
+                  staticClass: "table table-bordered table-striped dataTable",
+                  attrs: {
+                    id: "appointment_table",
+                    role: "grid",
+                    "aria-describedby": "example1_info"
+                  }
+                },
+                [
+                  _vm._m(1),
+                  _vm._v(" "),
+                  _c(
+                    "tbody",
+                    _vm._l(_vm.appointments, function(appointment, index) {
+                      return _c(
+                        "tr",
+                        {
+                          key: appointment.id,
+                          staticClass: "odd",
+                          attrs: { role: "row" }
+                        },
+                        [
+                          _c("td", [_vm._v(_vm._s(index + 1))]),
+                          _vm._v(" "),
+                          _c("td", [_vm._v(_vm._s(appointment.name))]),
+                          _vm._v(" "),
+                          _c("td", [_vm._v(_vm._s(appointment.phone))]),
+                          _vm._v(" "),
+                          _c("td", [_vm._v(_vm._s(appointment.start_time))]),
+                          _vm._v(" "),
+                          _c("td", [_vm._v(_vm._s(appointment.stop_time))]),
+                          _vm._v(" "),
+                          _c("td", [_vm._v(_vm._s(appointment.status))]),
+                          _vm._v(" "),
+                          _vm.$gate.doctor()
+                            ? _c("td", [
+                                _vm._m(2, true),
+                                _vm._v(" "),
+                                _vm._m(3, true),
+                                _vm._v(" "),
+                                _vm._m(4, true)
+                              ])
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _vm.$gate.patient()
+                            ? _c("td", [
+                                _vm._m(5, true),
+                                _vm._v(" "),
+                                _vm._m(6, true)
+                              ])
+                            : _vm._e()
+                        ]
+                      )
+                    }),
+                    0
+                  )
+                ]
+              )
+            ])
+          ])
+        ]
+      )
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "btn btn-tool",
+        attrs: { type: "button", "data-card-widget": "remove" }
+      },
+      [_c("i", { staticClass: "fas fa-remove" })]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", { attrs: { role: "row" } }, [
+        _c("th", { staticClass: "sorting_asc" }, [_vm._v("S/N")]),
+        _vm._v(" "),
+        _c(
+          "th",
+          {
+            staticClass: "sorting_asc",
+            attrs: {
+              tabindex: "0",
+              "aria-controls": "example1",
+              rowspan: "1",
+              colspan: "1",
+              "aria-sort": "ascending",
+              "aria-label":
+                "Rendering engine: activate to sort column descending"
+            }
+          },
+          [_vm._v("Name")]
+        ),
+        _vm._v(" "),
+        _c(
+          "th",
+          {
+            staticClass: "sorting",
+            attrs: {
+              tabindex: "0",
+              "aria-controls": "example1",
+              rowspan: "1",
+              colspan: "1"
+            }
+          },
+          [_vm._v("Phone")]
+        ),
+        _vm._v(" "),
+        _c(
+          "th",
+          {
+            staticClass: "sorting",
+            attrs: {
+              tabindex: "0",
+              "aria-controls": "example1",
+              rowspan: "1",
+              colspan: "1"
+            }
+          },
+          [_vm._v("Start Time")]
+        ),
+        _vm._v(" "),
+        _c(
+          "th",
+          {
+            staticClass: "sorting",
+            attrs: {
+              tabindex: "0",
+              "aria-controls": "example1",
+              rowspan: "1",
+              colspan: "1"
+            }
+          },
+          [_vm._v("Stop Time")]
+        ),
+        _vm._v(" "),
+        _c(
+          "th",
+          {
+            staticClass: "sorting",
+            attrs: {
+              tabindex: "0",
+              "aria-controls": "example1",
+              rowspan: "1",
+              colspan: "1"
+            }
+          },
+          [_vm._v("Status")]
+        ),
+        _vm._v(" "),
+        _c(
+          "th",
+          { staticClass: "not-exported", staticStyle: { width: "140" } },
+          [_vm._v("Actions")]
+        )
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "btn btn-primary btn-xs",
+        attrs: { title: "View User Info" }
+      },
+      [_c("i", { staticClass: "fas fa-eye" })]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      { staticClass: "btn btn-success btn-xs", attrs: { title: "Accept" } },
+      [_c("i", { staticClass: "fas fa-check" })]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      { staticClass: "btn btn-danger btn-xs", attrs: { title: "Reject" } },
+      [_c("i", { staticClass: "fas fa-times" })]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("button", { staticClass: "btn btn-secondary btn-xs" }, [
+      _c("i", { staticClass: "fas fa-edit" }),
+      _vm._v(" Reschedule")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("button", { staticClass: "btn btn-danger btn-xs" }, [
+      _c("i", { staticClass: "fas fa-trash" }),
+      _vm._v(" Delete")
+    ])
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/appointment/CreateAppointment.vue?vue&type=template&id=4003b2b8&":
 /*!********************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/appointment/CreateAppointment.vue?vue&type=template&id=4003b2b8& ***!
@@ -43334,7 +43886,7 @@ var render = function() {
                       }
                     ],
                     class: { "is-invalid": _vm.form.errors.has("department") },
-                    attrs: { type: "hidden", name: "customer_id_hidden" },
+                    attrs: { type: "hidden", name: "department_id_hidden" },
                     domProps: { value: _vm.form.department },
                     on: {
                       input: function($event) {
@@ -43360,9 +43912,9 @@ var render = function() {
                       staticClass: "selectpicker form-control",
                       attrs: {
                         required: "",
-                        name: "customer_id",
+                        name: "department_id",
                         "data-live-search": "true",
-                        id: "customer_id",
+                        id: "department_id",
                         "data-live-search-style": "begins",
                         title: "Select Department..."
                       },
@@ -43396,7 +43948,10 @@ var render = function() {
                         return [
                           _c(
                             "option",
-                            { domProps: { value: department.uuid } },
+                            {
+                              key: department.id,
+                              domProps: { value: department.uuid }
+                            },
                             [_vm._v(_vm._s(department.title))]
                           )
                         ]
@@ -43430,7 +43985,7 @@ var render = function() {
                       }
                     ],
                     class: { "is-invalid": _vm.form.errors.has("doctor") },
-                    attrs: { type: "hidden", name: "customer_id_hidden" },
+                    attrs: { type: "hidden", name: "doctor_id_hidden" },
                     domProps: { value: _vm.form.doctor },
                     on: {
                       input: function($event) {
@@ -43442,28 +43997,27 @@ var render = function() {
                     }
                   }),
                   _vm._v(" "),
-                  _c(
-                    "select",
-                    {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.form.doctor,
-                          expression: "form.doctor"
-                        }
-                      ],
-                      staticClass: "selectpicker form-control",
-                      attrs: {
-                        required: "",
-                        name: "customer_id",
-                        "data-live-search": "true",
-                        id: "customer_id",
-                        "data-live-search-style": "begins",
-                        title: "Select customer..."
-                      },
-                      on: {
-                        change: function($event) {
+                  _c("select", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.form.doctor,
+                        expression: "form.doctor"
+                      }
+                    ],
+                    staticClass: "selectpicker form-control",
+                    attrs: {
+                      required: "",
+                      name: "doctor_id",
+                      "data-live-search": "true",
+                      id: "doctor_id",
+                      "data-live-search-style": "begins",
+                      title: "Select Doctor..."
+                    },
+                    on: {
+                      change: [
+                        function($event) {
                           var $$selectedVal = Array.prototype.filter
                             .call($event.target.options, function(o) {
                               return o.selected
@@ -43479,19 +44033,13 @@ var render = function() {
                               ? $$selectedVal
                               : $$selectedVal[0]
                           )
+                        },
+                        function($event) {
+                          return _vm.doctorInfo(_vm.form.doctor)
                         }
-                      }
-                    },
-                    [
-                      _c("option", { attrs: { value: "" } }),
-                      _vm._v(" "),
-                      _c("option", { attrs: { value: "" } }, [
-                        _vm._v("Madagascar")
-                      ]),
-                      _vm._v(" "),
-                      _c("option", { attrs: { value: "" } }, [_vm._v("Europe")])
-                    ]
-                  ),
+                      ]
+                    }
+                  }),
                   _vm._v(" "),
                   _c("has-error", {
                     attrs: { form: _vm.form, field: "doctor" }
@@ -43500,6 +44048,122 @@ var render = function() {
                 1
               )
             ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.show_doctor,
+                    expression: "show_doctor"
+                  }
+                ],
+                staticClass: "card-body"
+              },
+              [
+                _c("h3", [_vm._v("Doctor's Information")]),
+                _vm._v(" "),
+                _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col-sm-3" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("Title")]),
+                      _vm._v(" "),
+                      _c("input", {
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          placeholder: _vm.doc_info.title,
+                          disabled: _vm.doc_info.title
+                        },
+                        domProps: { value: _vm.doc_info.title }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-sm-9" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("Name")]),
+                      _vm._v(" "),
+                      _c("input", {
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          placeholder: "",
+                          disabled: _vm.doc_info.name
+                        },
+                        domProps: { value: _vm.doc_info.name }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-sm-6" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("Visitation Charge")]),
+                      _vm._v(" "),
+                      _c("input", {
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          placeholder: _vm.doc_info.charge,
+                          disabled: ""
+                        },
+                        domProps: { value: _vm.doc_info.charge }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-sm-6" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("Position")]),
+                      _vm._v(" "),
+                      _c("input", {
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          placeholder: _vm.doc_info.position,
+                          disabled: ""
+                        },
+                        domProps: { value: _vm.doc_info.position }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-sm-6" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("specialiazation")]),
+                      _vm._v(" "),
+                      _c("input", {
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          placeholder: _vm.doc_info.specialiazation,
+                          disabled: ""
+                        },
+                        domProps: { value: _vm.doc_info.specialiazation }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-sm-6" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("Certificates")]),
+                      _vm._v(" "),
+                      _c("input", {
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          placeholder: _vm.doc_info.certificate,
+                          disabled: ""
+                        },
+                        domProps: { value: _vm.doc_info.certificate }
+                      })
+                    ])
+                  ])
+                ])
+              ]
+            ),
             _vm._v(" "),
             _c("div", { staticClass: "col-md-6" }, [
               _c("div", { staticClass: "form-group" }, [
@@ -43510,14 +44174,6 @@ var render = function() {
                     _vm._m(2),
                     _vm._v(" "),
                     _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.form.start_time,
-                          expression: "form.start_time"
-                        }
-                      ],
                       staticClass: "form-control datetime",
                       class: {
                         "is-invalid": _vm.form.errors.has("start_time")
@@ -43527,15 +44183,6 @@ var render = function() {
                         id: "start_time",
                         name: "start_time",
                         required: ""
-                      },
-                      domProps: { value: _vm.form.start_time },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(_vm.form, "start_time", $event.target.value)
-                        }
                       }
                     }),
                     _vm._v(" "),
@@ -43547,7 +44194,7 @@ var render = function() {
                     _vm._v(" "),
                     _c("p", { staticClass: "helper-block" }, [
                       _vm._v(
-                        "\n                        Appointment Time Picker\n                    "
+                        "\n                            Appointment Time Picker\n                        "
                       )
                     ])
                   ],
@@ -43565,14 +44212,6 @@ var render = function() {
                     _vm._m(3),
                     _vm._v(" "),
                     _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.form.stop_time,
-                          expression: "form.stop_time"
-                        }
-                      ],
                       staticClass: "form-control datetime",
                       class: { "is-invalid": _vm.form.errors.has("stop_time") },
                       attrs: {
@@ -43580,15 +44219,6 @@ var render = function() {
                         id: "stop_time",
                         name: "stop_time",
                         required: ""
-                      },
-                      domProps: { value: _vm.form.stop_time },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(_vm.form, "stop_time", $event.target.value)
-                        }
                       }
                     }),
                     _vm._v(" "),
@@ -43609,7 +44239,19 @@ var render = function() {
               ])
             ]),
             _vm._v(" "),
-            _vm._m(4)
+            _c("div", { staticClass: "col-md-12" }, [
+              _c("div", { staticClass: "form-group" }, [
+                _vm._m(4),
+                _vm._v(" "),
+                _c("textarea", {
+                  staticClass: "form-control",
+                  attrs: { name: "appointment_reason", rows: "3" },
+                  domProps: { textContent: _vm._s(_vm.form.appointment_reason) }
+                })
+              ])
+            ]),
+            _vm._v(" "),
+            _vm._m(5)
           ])
         ]
       )
@@ -43661,10 +44303,18 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
+    return _c("label", [_c("strong", [_vm._v("Reason for Appointment")])])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
     return _c("div", { staticClass: "col-md-12 text-right mt-3" }, [
-      _c("button", { staticClass: "btn btn-success col-md-12" }, [
-        _vm._v(" Book Appointment")
-      ])
+      _c(
+        "button",
+        { staticClass: "btn btn-success col-md-12", attrs: { id: "submit" } },
+        [_vm._v(" Book Appointment")]
+      )
     ])
   }
 ]
@@ -56249,6 +56899,48 @@ module.exports = function(module) {
 
 /***/ }),
 
+/***/ "./resources/js/AccessGates.js":
+/*!*************************************!*\
+  !*** ./resources/js/AccessGates.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Gate; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Gate = /*#__PURE__*/function () {
+  function Gate(user) {
+    _classCallCheck(this, Gate);
+
+    this.user = user;
+  }
+
+  _createClass(Gate, [{
+    key: "doctor",
+    value: function doctor() {
+      return this.user.role === "doctor";
+    }
+  }, {
+    key: "patient",
+    value: function patient() {
+      return this.user.role === "patient";
+    }
+  }]);
+
+  return Gate;
+}();
+
+
+
+/***/ }),
+
 /***/ "./resources/js/app.js":
 /*!*****************************!*\
   !*** ./resources/js/app.js ***!
@@ -56264,6 +56956,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_progressbar__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vue_progressbar__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
 /* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _AccessGates__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./AccessGates */ "./resources/js/AccessGates.js");
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -56274,7 +56967,9 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 
 
- // Initializing vue form object
+
+
+Vue.prototype.$gate = new _AccessGates__WEBPACK_IMPORTED_MODULE_3__["default"](window.user); // Initializing vue form object
 
 window.Form = vform__WEBPACK_IMPORTED_MODULE_0__["Form"];
 Vue.component(vform__WEBPACK_IMPORTED_MODULE_0__["HasError"].name, vform__WEBPACK_IMPORTED_MODULE_0__["HasError"]);
@@ -56320,6 +57015,7 @@ Vue.component('info-failed', __webpack_require__(/*! ./components/Infos/failed.v
 Vue.component('info-success', __webpack_require__(/*! ./components/Infos/success.vue */ "./resources/js/components/Infos/success.vue")["default"]);
 Vue.component('all-departments', __webpack_require__(/*! ./components/departments/AllDepartments.vue */ "./resources/js/components/departments/AllDepartments.vue")["default"]);
 Vue.component('book-appointment', __webpack_require__(/*! ./components/appointment/CreateAppointment.vue */ "./resources/js/components/appointment/CreateAppointment.vue")["default"]);
+Vue.component('all-appointments', __webpack_require__(/*! ./components/appointment/AllAppointments.vue */ "./resources/js/components/appointment/AllAppointments.vue")["default"]);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -56670,6 +57366,75 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_success_vue_vue_type_template_id_1b09dec4___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_success_vue_vue_type_template_id_1b09dec4___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/appointment/AllAppointments.vue":
+/*!*****************************************************************!*\
+  !*** ./resources/js/components/appointment/AllAppointments.vue ***!
+  \*****************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _AllAppointments_vue_vue_type_template_id_9639862c___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AllAppointments.vue?vue&type=template&id=9639862c& */ "./resources/js/components/appointment/AllAppointments.vue?vue&type=template&id=9639862c&");
+/* harmony import */ var _AllAppointments_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AllAppointments.vue?vue&type=script&lang=js& */ "./resources/js/components/appointment/AllAppointments.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _AllAppointments_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _AllAppointments_vue_vue_type_template_id_9639862c___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _AllAppointments_vue_vue_type_template_id_9639862c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/appointment/AllAppointments.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/appointment/AllAppointments.vue?vue&type=script&lang=js&":
+/*!******************************************************************************************!*\
+  !*** ./resources/js/components/appointment/AllAppointments.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AllAppointments_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./AllAppointments.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/appointment/AllAppointments.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AllAppointments_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/appointment/AllAppointments.vue?vue&type=template&id=9639862c&":
+/*!************************************************************************************************!*\
+  !*** ./resources/js/components/appointment/AllAppointments.vue?vue&type=template&id=9639862c& ***!
+  \************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AllAppointments_vue_vue_type_template_id_9639862c___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./AllAppointments.vue?vue&type=template&id=9639862c& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/appointment/AllAppointments.vue?vue&type=template&id=9639862c&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AllAppointments_vue_vue_type_template_id_9639862c___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AllAppointments_vue_vue_type_template_id_9639862c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 

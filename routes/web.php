@@ -34,7 +34,9 @@ Route::group(['prefix' => 'dashboard', 'namespace'=> 'Dashboard'], function () {
     Route::post('/create_department', 'DepartmentController@store');
     Route::put('/update_department/{id}', 'DepartmentController@update');
     Route::get('/appointment', 'AppointmentController@index');
-    Route::get('/find_doctor_by_dept/{$id}', 'AppointmentController@findDoctor');
+    Route::post('/create_appointment', 'AppointmentController@store');
+    Route::get('/all_appointments', 'AppointmentController@viewAppointments');
+    Route::get('/find_doctor_by_dept/{id}', 'AppointmentController@findDoctor');
 });
 
 Route::get('/email', function() {

@@ -44,4 +44,17 @@ class User extends Authenticatable implements MustVerifyEmail
     public function doctorProfile() {
         return $this->hasOne('App\DoctorProfile', 'doctor_uuid', 'uuid');
     }
+
+    public function patientProfile() {
+        return $this->hasOne('App\PatientProfile', 'patient_uuid', 'uuid');
+    }
+
+    public function doctor_appointment() {
+        return $this->hasMany('App\Appointment', 'doctor_uuid', 'uuid');
+    }
+
+    public function patient_appointment() {
+        return $this->hasMany('App\Appointment', 'patient_uuid', 'uuid');
+    }
+    
 }
